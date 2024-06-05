@@ -1,6 +1,1 @@
-{
-	"hosting": {
-		"public": "build/web",
-		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
-	}
-}
+{"hosting":{"public":"build/web","ignore":["firebase.json","**/.*","**/node_modules/**"]},"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"outreach-flowing","configurations":{"web":"1:906897801987:web:0fcabd0dcb1dad021b5f36"}}}}}}

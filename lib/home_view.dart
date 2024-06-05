@@ -1,8 +1,8 @@
 import 'dart:developer';
-
-import 'package:chamber_choir_outreach/desktop_view.dart';
+import 'package:chamber_choir_outreach/controller/data_controller.dart';
 import 'package:chamber_choir_outreach/mobile_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});

@@ -1,15 +1,12 @@
-import 'dart:developer';
-
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:chamber_choir_outreach/data.dart';
+import 'package:chamber_choir_outreach/controller/data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class MobileView extends StatefulWidget {
   double breakPoint;
@@ -24,7 +21,7 @@ class _MobileViewState extends State<MobileView> {
   final videoURL = "https://youtu.be/YaMSwHWv0io?si=3iHcr9QysB7cVqXH";
   final videoID = "YaMSwHWv0io";
 
-  final YoutubePlayerController _youtubeController = YoutubePlayerController();
+  // final YoutubePlayerController _youtubeController = YoutubePlayerController();
   final ScrollController _scrollController = ScrollController();
   double _progress = 0.0;
 
@@ -32,7 +29,7 @@ class _MobileViewState extends State<MobileView> {
   void initState() {
     super.initState();
 
-    _youtubeController.cueVideoById(videoId: videoID);
+    // _youtubeController.cueVideoById(videoId: videoID);
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -51,12 +48,6 @@ class _MobileViewState extends State<MobileView> {
   @override
   Widget build(BuildContext context) {
     var f = NumberFormat('###,###,###,###');
-    // //* 후원금액
-    // int donation = 1000000;
-    // int donationPercent = ((donation / 8765000) * 100).toInt();
-    // //* 후원자
-    // int donor = 100;
-    // //*
 
     Size size = MediaQuery.of(context).size;
 
@@ -79,7 +70,7 @@ class _MobileViewState extends State<MobileView> {
                 child: Column(
                   children: [
                     const Image(
-                      image: AssetImage('assets/images/2023outreach.jpg'),
+                      image: AssetImage('assets/images/outreach_main.jpeg'),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -100,73 +91,93 @@ class _MobileViewState extends State<MobileView> {
                             // mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              //* 모인 금액 확인
-                              Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "후원 금액",
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.baseline,
-                                        textBaseline: TextBaseline.alphabetic,
-                                        children: [
-                                          Text(
-                                            f.format(Data.donation),
-                                            style: const TextStyle(
-                                              fontSize: 32,
-                                              fontWeight: FontWeight.bold,
+                              Consumer<DataController>(
+                                builder: (context, value, child) {
+                                  //* 모인 금액 확인
+
+                                  return value.donation == 0
+                                      ? Center(
+                                          widthFactor: size.width * 0.5,
+                                          child:
+                                              const CircularProgressIndicator(
+                                            color: Colors.blue,
+                                            strokeWidth: 2,
+                                          ))
+                                      : Row(
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  "후원 금액",
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .baseline,
+                                                  textBaseline:
+                                                      TextBaseline.alphabetic,
+                                                  children: [
+                                                    Text(
+                                                      f.format(value.donation),
+                                                      style: const TextStyle(
+                                                        fontSize: 32,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const Text(" 원"),
+                                                    const SizedBox(width: 20),
+                                                    Text(
+                                                      "${value.donationPercent}%",
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          const Text(" 원"),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            "${Data.donationPercent}%",
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
+                                            SizedBox(width: size.width * 0.1),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  "후원자",
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .baseline,
+                                                  textBaseline:
+                                                      TextBaseline.alphabetic,
+                                                  children: [
+                                                    Text(
+                                                      "${value.donor}",
+                                                      style: const TextStyle(
+                                                        fontSize: 32,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const Text(" 명"),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(width: size.width * 0.12),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "후원자",
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.baseline,
-                                        textBaseline: TextBaseline.alphabetic,
-                                        children: [
-                                          Text(
-                                            "${Data.donor}",
-                                            style: const TextStyle(
-                                              fontSize: 32,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const Text(" 명"),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                          ],
+                                        );
+                                },
                               ),
                               const SizedBox(height: 20),
                               const Text(
-                                "후원금액과 후원자 수는 매일 오전 중으로 업데이트됩니다.",
+                                "후원금액과 후원자 수는 업데이트까지 일정 시간이 소요될 수 있습니다.",
                                 style:
                                     TextStyle(fontSize: 10, color: Colors.grey),
                               ),
@@ -292,7 +303,7 @@ class _MobileViewState extends State<MobileView> {
                               Image.asset('assets/images/outreach_dream.JPEG'),
                               const SizedBox(height: 20),
                               const AutoSizeText(
-                                  "사역지에서 진행하는 챔가대 소규모 문화사역과 예배 입니다. 지역 주민들을 초청하여 챔가대의 음악과 다양한 컨텐츠를 통하여 복음을 전하는 문화사역입니다!흥 콘텐츠, 워십 콘텐츠, 스킷, 그리고 챔버와 챔가대 찬양의  순서로 이루어집니다."),
+                                  "사역지에서 진행하는 챔가대 소규모 문화사역과 예배 입니다. 지역 주민들을 초청하여 챔가대의 음악과 다양한 컨텐츠를 통하여 복음을 전하는 문화사역입니다! 흥 콘텐츠, 워십 콘텐츠, 스킷, 그리고 챔버와 챔가대 찬양의 순서로 이루어집니다."),
 
                               //* 3. 캠프
                               const SizedBox(height: 20),
@@ -339,18 +350,18 @@ class _MobileViewState extends State<MobileView> {
                               const SizedBox(height: 20),
 
                               const AutoSizeText(
-                                "보다 구체적인 활동은 아래 링크와 영상을 통해 확인해주시면 감사하겠습니다!",
+                                "보다 구체적인 활동은 아래 링크를 통해 확인해주시면 감사하겠습니다!",
                                 maxLines: 2,
                               ),
 
-                              const SizedBox(height: 20),
-                              YoutubePlayer(
-                                controller: _youtubeController,
-                                aspectRatio: 16 / 9,
-                              ),
-                              const SizedBox(height: 20),
+                              // const SizedBox(height: 20),
+                              // YoutubePlayer(
+                              //   controller: _youtubeController,
+                              //   aspectRatio: 16 / 9,
+                              // ),
+                              // const SizedBox(height: 20),
 
-                              const Text("챔가대와 아웃리치가 더 궁금하다면?"),
+                              // const Text("챔가대와 아웃리치가 더 궁금하다면?"),
                               const SizedBox(height: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
